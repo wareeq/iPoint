@@ -3,25 +3,23 @@ let postRequests = [];
 chrome.webRequest.onBeforeRequest.addListener(
   function(details) {
     if (details.method === "POST") {
-      let requestBody = {};
+      let rawRequestBody = "";
+      let headers = details.requestHeaders || [];
 
-      if (details.requestBody && details.requestBody.formData) {
-        requestBody = details.requestBody.formData;
-      } else if (details.requestBody && details.requestBody.raw) {
-        // If formData is not available, try to parse raw data
+      if (details.requestBody && details.requestBody.raw) {
+        // Decode the raw bytes to string
         let raw = details.requestBody.raw[0].bytes;
         let decoder = new TextDecoder("utf-8");
-        let text = decoder.decode(raw);
-        let params = new URLSearchParams(text);
-        params.forEach((value, key) => {
-          requestBody[key] = value;
-        });
+        rawRequestBody = decoder.decode(raw);
       }
 
       let request = {
+        id: postRequests.length + 1,
+        method: details.method,
         url: details.url,
-        requestBody: requestBody,
-        timeStamp: details.timeStamp
+        timeStamp: details.timeStamp,
+        headers: headers,
+        rawRequest: rawRequestBody
       };
 
       postRequests.push(request);
@@ -29,7 +27,7 @@ chrome.webRequest.onBeforeRequest.addListener(
     }
   },
   { urls: ["<all_urls>"] },
-  ["requestBody"]
+  ["requestBody", "extraHeaders"]
 );
 
 // Function to clear the logs

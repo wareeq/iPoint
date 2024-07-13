@@ -1,20 +1,36 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>IPoint</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Request Logger</title>
   <style>
     body { font-family: Arial, sans-serif; }
-    #requests { max-height: 300px; overflow-y: scroll; }
-    .request { margin-bottom: 10px; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+    th { background-color: #f2f2f2; }
+    .details { display: none; }
+    .raw-request { white-space: pre-wrap; background: #2c2c2c; color: #f8f8f2; padding: 10px; margin-top: 10px; }
   </style>
 </head>
 <body>
-  <h1>IPoint</h1>
+  <h1>Logged Requests</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Method</th>
+        <th>URL</th>
+      </tr>
+    </thead>
+    <tbody id="requestTableBody">
+      <!-- JavaScript will populate this -->
+    </tbody>
+  </table>
+  <button id="clearLogs">Clear Logs</button>
   <button id="highlightForms">Highlight Unsubmitted Forms</button>
-  <h2>Logged POST Requests</h2>
-  <div id="requests"></div>
   <button id="sendToBackend">Send to Backend</button>
-
+  
   <script src="popup.js"></script>
 </body>
 </html>
