@@ -9,10 +9,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const requests = data.postRequests || [];
     requests.forEach(request => {
       const row = document.createElement('tr');
+      row.className = "toggle-details";
       row.innerHTML = `
         <td>${request.id}</td>
         <td>${request.method}</td>
-        <td><a href="#" class="toggle-details">${request.url}</a></td>
+        <td>${request.url}</td>
       `;
 
       const detailsRow = document.createElement('tr');
@@ -20,16 +21,16 @@ document.addEventListener('DOMContentLoaded', function() {
       detailsRow.innerHTML = `
         <td colspan="3">
           <div class="raw-request">
-            ${request.method} ${new URL(request.url).pathname} HTTP/1.1\n
-            Host: ${new URL(request.url).host}\n
-            ${request.headers}\n
-            \n
-            ${request.rawRequest}
+${request.method} ${new URL(request.url).pathname} HTTP/1.1
+Host: ${new URL(request.url).host}
+${request.headers}
+
+${request.rawRequest}
           </div>
         </td>
       `;
 
-      row.querySelector('.toggle-details').addEventListener('click', function(event) {
+      row.addEventListener('click', function(event) {
         event.preventDefault();
         detailsRow.classList.toggle('details');
       });
