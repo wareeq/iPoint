@@ -15,8 +15,6 @@ document.addEventListener('DOMContentLoaded', function() {
         <td><a href="#" class="toggle-details">${request.url}</a></td>
       `;
 
-      const headersString = request.headers.map(header => `${header.name}: ${header.value}`).join('\n');
-
       const detailsRow = document.createElement('tr');
       detailsRow.classList.add('details');
       detailsRow.innerHTML = `
@@ -24,7 +22,7 @@ document.addEventListener('DOMContentLoaded', function() {
           <div class="raw-request">
             ${request.method} ${new URL(request.url).pathname} HTTP/1.1\n
             Host: ${new URL(request.url).host}\n
-            ${headersString}\n
+            ${request.headers}\n
             \n
             ${request.rawRequest}
           </div>
