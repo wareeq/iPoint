@@ -2,7 +2,6 @@ document.addEventListener('DOMContentLoaded', function() {
   const clearLogsButton = document.getElementById('clearLogs');
   const requestTableBody = document.getElementById('requestTableBody');
   const highlightFormsButton = document.getElementById('highlightForms');
-  const sendToBackendButton = document.getElementById('sendToBackend');
 
   // Fetch and display the logged POST requests
   chrome.storage.local.get('postRequests', function(data) {
@@ -14,12 +13,13 @@ document.addEventListener('DOMContentLoaded', function() {
         <td>${request.id}</td>
         <td>${request.method}</td>
         <td>${request.url}</td>
+        <td><button class="send-to-backend" data-id="${request.id}">Send to Backend</button></td>
       `;
 
       const detailsRow = document.createElement('tr');
       detailsRow.classList.add('details');
       detailsRow.innerHTML = `
-        <td colspan="3">
+        <td colspan="4">
           <div class="raw-request">
 ${request.method} ${new URL(request.url).pathname} HTTP/1.1
 Host: ${new URL(request.url).host}
@@ -37,6 +37,30 @@ ${request.rawRequest}
 
       requestTableBody.appendChild(row);
       requestTableBody.appendChild(detailsRow);
+    });
+
+    // Add event listener for all send-to-backend buttons
+    document.querySelectorAll('.send-to-backend').forEach(button => {
+      button.addEventListener('click', function(event) {
+        const requestId = event.target.dataset.id;
+        const request = requests.find(req => req.id === parseInt(requestId));
+        if (request) {
+          fetch('http://134.122.39.253:5000/run-script', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(request)
+          })
+          .then(response => response.text())
+          .then(data => {
+            console.log('Success:', data);
+          })
+          .catch(error => {
+            console.error('Error:', error);
+          });
+        }
+      });
     });
   });
 
@@ -57,22 +81,6 @@ ${request.rawRequest}
           console.log('Forms highlighted successfully.');
         }
       });
-    });
-  });
-
-  // Send requests to backend button event listener
-  sendToBackendButton.addEventListener('click', function() {
-    chrome.storage.local.get('postRequests', function(data) {
-      fetch('https://your-backend-server.com/api/requests', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data.postRequests)
-      })
-      .then(response => response.json())
-      .then(data => console.log('Success:', data))
-      .catch(error => console.error('Error:', error));
     });
   });
 });
