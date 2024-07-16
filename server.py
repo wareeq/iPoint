@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 import urllib.parse
+import subprocess
 
 app = Flask(__name__)
 
@@ -31,9 +32,11 @@ def run_script():
     with open('test.txt', 'w') as file:
         file.write(http_request)
     
-    # Dummy response to indicate success
-    return jsonify({"status": "success", "message": "Request saved in raw HTTP format"}), 200
+    # Run the external script using test.txt
+    result = subprocess.run(['python3', '~/pentester/tools/scripts/BlackBox/blackBox.py', '-f' , 'test.txt'], capture_output=True, text=True)
+    
+    # Dummy response to indicate success and return script output
+    return jsonify({"status": "success", "message": "Request saved and script executed", "script_output": result.stdout}), 200
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
-
